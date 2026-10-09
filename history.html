@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}History · VoltGrid{% endblock %}{% block content %}
+<div class="page-head"><div><p class="eyebrow">ACTIVITY</p><h1>Charging history</h1><p>Your completed charging sessions.</p></div></div>
+<div class="table-wrap"><table><tr><th>Station</th><th>Energy</th><th>Cost</th><th>Date</th></tr>{% for r in rows %}<tr><td>{{ r.station_name }}</td><td>{{ r.energy_kwh }} kWh</td><td>₹{{ r.cost }}</td><td>{{ r.charged_at }}</td></tr>{% else %}<tr><td colspan="4" class="empty">No charging sessions recorded yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

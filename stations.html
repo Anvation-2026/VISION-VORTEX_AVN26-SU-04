@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Charging Stations · VoltGrid{% endblock %}{% block content %}
+<div class="page-head"><div><p class="eyebrow">DISCOVER</p><h1>Charging stations</h1><p>Find chargers around your current area.</p></div><button class="btn secondary" onclick="useLocation()">◎ Use my location</button></div>
+<div class="notice">{% if live %}🟢 Live station data connected{% else %}🟡 Demo station data active — add OCM_API_KEY for live station data{% endif %}</div>
+<div class="station-grid large">{% for s in stations %}<a class="station-card" href="/station/{{ s.id }}"><div class="station-top"><span class="status">{{ s.status }}</span><span>{% if s.distance %}{{ s.distance }} km{% endif %}</span></div><h3>{{ s.title }}</h3><p>{{ s.address }}</p><div class="station-info"><span>⚡ {{ s.power_kw }} kW</span><span>🔌 {{ s.connector }}</span><span>{% if s.price %}₹{{ s.price }}/kWh{% else %}Tariff N/A{% endif %}</span></div><div class="station-bottom"><span>Open details</span><b>→</b></div></a>{% endfor %}</div>
+<script>
+function useLocation(){ if(!navigator.geolocation)return alert("Location is not supported."); navigator.geolocation.getCurrentPosition(p=>location.href="/stations?lat="+p.coords.latitude+"&lon="+p.coords.longitude,()=>alert("Could not access your location."));}
+</script>
+{% endblock %}

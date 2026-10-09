@@ -1,0 +1,5 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login · VoltGrid</title><link rel="stylesheet" href="/static/style.css"></head>
+<body class="auth"><div class="auth-card"><a class="logo center" href="/">⚡ VOLTGRID</a><h1>Welcome back</h1><p>Sign in to manage your EV charging.</p>
+{% if error %}<div class="alert">{{ error }}</div>{% endif %}
+<form method="post" action="/login"><label>Email<input type="email" name="email" required placeholder="you@example.com"></label><label>Password<input type="password" name="password" required placeholder="••••••••"></label><button class="btn primary full">Sign in</button></form>
+<p class="switch">New here? <a href="/register">Create an account</a></p></div></body></html>

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Sustainability Center · VoltGrid{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">STATION PROVIDER · SUSTAINABILITY</p>
+    <h1>🌱 Sustainability Center</h1>
+    <p>Understand how the station is becoming greener and more energy-efficient.</p>
+  </div>
+  <div class="sustain-live">● Sustainability intelligence active</div>
+</div>
+
+{% if request.query_params.get("optimized") %}
+<div class="success-banner">✓ VoltGrid optimized the flexible charging plan for the clean-energy window.</div>
+{% endif %}
+
+<section class="eco-hero">
+  <div>
+    <p class="card-label">STATION SUSTAINABILITY SCORE</p>
+    <div class="eco-score">{{ s.eco_score }}<small>/100</small></div>
+    <div class="eco-track"><span style="width:87%"></span></div>
+    <p class="hero-muted">Based on renewable utilization, grid efficiency, peak reduction, CO₂ impact, battery-friendly charging and energy wastage.</p>
+  </div>
+  <div class="score-grid">
+    <div>☀️ Renewable utilization <b>91</b></div>
+    <div>⚡ Grid efficiency <b>89</b></div>
+    <div>📉 Peak-load reduction <b>93</b></div>
+    <div>🌍 CO₂ reduction <b>86</b></div>
+    <div>🔋 Battery-friendly <b>94</b></div>
+    <div>♻️ Energy efficiency <b>90</b></div>
+  </div>
+</section>
+
+<div class="sustain-grid">
+
+<section class="sustain-card">
+  <div class="sustain-head"><div><h2>☀️ Renewable Energy Utilization</h2><p>Today's energy mix</p></div><span class="badge">{{ s.solar_utilization }}% utilized</span></div>
+  <div class="energy-mix">
+    <div class="mix-bar"><span style="width:38%"></span></div>
+    <div class="mix-row"><span>☀️ Solar</span><b>{{ s.solar_kwh }} kWh <small>{{ s.solar_pct }}%</small></b></div>
+    <div class="mix-row"><span>⚡ Grid</span><b>{{ s.grid_kwh }} kWh <small>{{ s.grid_pct }}%</small></b></div>
+    <div class="mix-row total"><span>Total Energy</span><b>{{ s.total_kwh }} kWh</b></div>
+  </div>
+  <div class="insight">💡 <b>VoltGrid Insight:</b> {{ s.solar_kwh }} kWh of today's charging was powered by solar energy.</div>
+</section>
+
+<section class="sustain-card">
+  <div class="sustain-head"><div><h2>🌍 Carbon Intelligence</h2><p>Environmental impact of optimized charging</p></div></div>
+  <div class="carbon-number">{{ s.co2_today }} <span>kg CO₂</span></div>
+  <p class="center-muted">emissions avoided today</p>
+  <div class="carbon-down">↓ {{ s.co2_reduction }}% vs unmanaged charging</div>
+  <div class="mini-kpis"><div><b>{{ s.co2_month }} kg</b><span>CO₂ avoided this month</span></div><div><b>{{ s.clean_month }} MWh</b><span>Clean energy this month</span></div></div>
+</section>
+
+<section class="sustain-card wide">
+  <div class="sustain-head"><div><h2>⚡ Peak Load Reduction</h2><p>Reduce unnecessary simultaneous charging and grid stress.</p></div><span class="badge">↓ {{ s.peak_reduction }}%</span></div>
+  <div class="peak-compare">
+    <div><small>WITHOUT VOLTGRID</small><b>{{ s.peak_unmanaged }} kW</b><div class="peakbar"><span style="width:100%"></span></div></div>
+    <div class="peak-arrow">→</div>
+    <div><small>OPTIMIZED PEAK</small><b>{{ s.peak_optimized }} kW</b><div class="peakbar"><span class="green" style="width:77%"></span></div></div>
+  </div>
+  <p class="muted">VoltGrid distributes charging power while protecting vehicle deadlines and station grid limits.</p>
+</section>
+
+<section class="sustain-card wide">
+  <div class="sustain-head"><div><h2>☀️ Green Charging Windows</h2><p>Best times to shift flexible charging toward renewable energy.</p></div><span class="badge">BEST · 12:00–14:00</span></div>
+  <div class="windows">
+    <div><i style="height:35%"></i><span>10:00</span></div>
+    <div><i style="height:70%"></i><span>11:00</span></div>
+    <div class="best"><i style="height:100%"></i><span>12:00</span></div>
+    <div class="best"><i style="height:88%"></i><span>13:00</span></div>
+    <div><i style="height:63%"></i><span>14:00</span></div>
+  </div>
+  <div class="recommendation">🌱 <b>Recommendation:</b> Shift <strong>{{ s.green_shift_kw }} kW</strong> of flexible charging to <strong>12:00–14:00</strong>.</div>
+</section>
+
+<section class="sustain-card">
+  <div class="sustain-head"><div><h2>💰 Cost + Carbon Optimization</h2><p>VoltGrid balances cost, carbon, grid load and deadlines.</p></div></div>
+  <div class="decision-grid">
+    <div><small>OPTION A · PRICE ONLY</small><b>₹{{ s.option_a_cost }}</b><span>CO₂: {{ s.option_a_co2 }} kg</span></div>
+    <div class="decision-arrow">VS</div>
+    <div class="recommended"><small>OPTION B · VOLTGRID</small><b>₹{{ s.option_b_cost }}</b><span>CO₂: {{ s.option_b_co2 }} kg</span></div>
+  </div>
+  <div class="savings">Save <b>₹{{ s.option_a_cost-s.option_b_cost }}</b> + reduce <b>{{ s.option_a_co2-s.option_b_co2 }} kg CO₂</b></div>
+</section>
+
+<section class="sustain-card">
+  <div class="sustain-head"><div><h2>🔋 Battery Health Guard</h2><p>Support battery longevity through less aggressive charging.</p></div></div>
+  <div class="health-circle"><b>{{ s.battery_optimal }}%</b><span>optimal sessions</span></div>
+  <div class="health-line"><span>High-stress sessions</span><b>{{ s.battery_stress }}%</b></div>
+  <div class="health-line"><span>Battery-friendly improvement</span><b>↑ {{ s.battery_improvement }}%</b></div>
+  <div class="insight">VoltGrid avoids unnecessarily aggressive charging when the operational deadline allows flexibility.</div>
+</section>
+
+<section class="sustain-card">
+  <div class="sustain-head"><div><h2>♻️ Energy Waste Monitor</h2><p>Energy available versus energy delivered.</p></div></div>
+  <div class="efficiency-number">{{ s.efficiency }}<small>%</small></div>
+  <p class="center-muted">energy utilization</p>
+  <div class="eff-track"><span style="width:90.4%"></span></div>
+  <div class="waste-grid"><div>Available<b>{{ s.energy_available }} kWh</b></div><div>Delivered<b>{{ s.energy_delivered }} kWh</b></div><div>Unutilized<b>{{ s.energy_unused }} kWh</b></div></div>
+  <div class="insight">💡 <b>Opportunity:</b> 42 kWh of flexible charging could be shifted into the afternoon solar window.</div>
+</section>
+
+<section class="sustain-card wide opportunity-card">
+  <div><p class="eyebrow">GREEN OPPORTUNITY SCORE</p><h2>🌱 Sustainability Opportunity Detected</h2><p>VoltGrid found a clean-energy opportunity that can be used without compromising charging requirements.</p>
+  <div class="opportunity-stats"><span>Solar available<b>+{{ s.solar_available_kw }} kW</b></span><span>Flexible EV demand<b>+{{ s.flexible_demand_kw }} kW</b></span><span>Potential clean shift<b>{{ s.green_shift_kw }} kWh</b></span></div></div>
+  <form method="post" action="/sustainability/optimize"><button class="green-action">OPTIMIZE FOR CLEAN ENERGY →</button></form>
+</section>
+
+<section class="daily-report wide">
+  <p class="eyebrow">DAILY SUSTAINABILITY REPORT</p><h2>Today's impact at a glance</h2>
+  <div class="report-grid"><div><b>{{ s.solar_kwh }} kWh</b><span>Clean energy used</span></div><div><b>{{ s.co2_today }} kg</b><span>CO₂ avoided</span></div><div><b>{{ s.peak_reduction }}%</b><span>Peak reduction</span></div><div><b>{{ s.solar_utilization }}%</b><span>Solar utilization</span></div><div><b>{{ s.efficiency }}%</b><span>Energy efficiency</span></div><div><b>{{ s.eco_score }}/100</b><span>Eco Score</span></div></div>
+  <p class="report-note">VoltGrid prevented unnecessary peak-grid demand while increasing renewable-energy utilization.</p>
+</section>
+
+</div>
+{% endblock %}

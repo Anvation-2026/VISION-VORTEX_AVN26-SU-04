@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Station Intelligence · VoltGrid{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">STATION INTELLIGENCE</p>
+    <h1>🔮 Predict the next charging peak.</h1>
+    <p>VoltGrid combines station status, time-of-day demand patterns and live conditions to forecast incoming EVs before congestion happens.</p>
+  </div>
+  <span id="sourceBadge" class="sustain-live">● Connecting…</span>
+</div>
+
+<section class="si-hero">
+  <div>
+    <p class="si-label">SELECTED POWER STATION</p>
+    <h2 id="stationName">{{ data.live.station.title if data.live else 'VoltGrid Central Charging Hub' }}</h2>
+    <p id="stationAddress">{{ data.live.station.address if data.live else 'Koramangala, Bengaluru' }}</p>
+    <div class="si-live-row"><span>● LIVE</span><small id="updatedAt">{{ data.live.timestamp if data.live else '—' }}</small></div>
+  </div>
+  <div class="si-live-kpis">
+    <div><span>Vehicles charging</span><b id="vehiclesNow">{{ data.live.vehicles_charging if data.live else 0 }}</b></div>
+    <div><span>Chargers free</span><b id="chargersFree">{{ data.live.available_chargers if data.live else 0 }}/{{ data.live.total_chargers if data.live else 0 }}</b></div>
+    <div><span>Current load</span><b id="currentLoad">{{ data.live.current_load_kw if data.live else 0 }} kW</b></div>
+    <div><span>Solar now</span><b id="solarNow">{{ data.live.solar_kw if data.live else 0 }} kW</b></div>
+  </div>
+</section>
+
+<section class="si-grid">
+  <div class="sustain-card si-wide">
+    <div class="sustain-head">
+      <div><h2>🔮 EV Arrival Forecast</h2><p>Predicted incoming vehicles and charging demand for the next 12 hours.</p></div>
+      <span class="badge">{{ data.confidence }}% forecast confidence</span>
+    </div>
+    <div class="forecast-chart-wrap"><svg id="forecastChart" viewBox="0 0 900 290" preserveAspectRatio="none" aria-label="EV arrival forecast chart"></svg></div>
+    <div id="forecastLegend" class="forecast-legend"></div>
+  </div>
+
+  <div class="sustain-card">
+    <div class="sustain-head"><div><h2>🚨 Peak Risk</h2><p>Future grid stress detected in advance.</p></div><span id="riskBadge" class="badge">Checking</span></div>
+    <div class="prediction-big"><b id="peakVehicles">{{ data.peak.vehicles if data.peak else 0 }}</b><span>EVs predicted</span></div>
+    <div class="mini-kpis">
+      <div><span>Peak time</span><b id="peakTime">{{ data.peak.time if data.peak else '—' }}</b></div>
+      <div><span>Expected load</span><b id="peakLoad">{{ data.peak.load_kw if data.peak else 0 }} kW</b></div>
+    </div>
+    <div id="riskMessage" class="si-alert">Analysing the station's next peak…</div>
+  </div>
+
+  <div class="sustain-card">
+    <div class="sustain-head"><div><h2>🤖 VoltGrid Recommendation</h2><p>Prediction feeds directly into future charging planning.</p></div></div>
+    <div class="recommendation si-recommendation"><b id="recommendationTitle">Preparing the station…</b><p id="recommendationText">VoltGrid will recommend shifting flexible sessions when predicted demand approaches the station limit.</p></div>
+    <div class="si-flow"><span>Predict arrivals</span><i>→</i><span>Forecast load</span><i>→</i><span>Reserve capacity</span><i>→</i><span>Optimize</span></div>
+  </div>
+
+  <div class="sustain-card si-wide">
+    <div class="sustain-head"><div><h2>🗄️ Real-Time Data Store</h2><p>Every live telemetry refresh is stored locally and becomes training data for the next forecast.</p></div><span id="dbMode" class="badge">Checking</span></div>
+    <div class="si-plan-grid">
+      <div><span>Telemetry snapshots</span><b id="snapshotCount">0</b></div>
+      <div><span>Arrival events learned</span><b id="eventCount">0</b></div>
+      <div><span>Data source</span><b id="dataSource">—</b></div>
+      <div><span>Prediction confidence</span><b id="confidence">—</b></div>
+    </div>
+    <p class="muted si-note">For true station-level arrival prediction, connect the station operator's telemetry endpoint. Open Charge Map can provide station metadata/status, but it does not reliably expose live arrival counts.</p>
+  </div>
+
+  <div class="sustain-card si-wide">
+    <div class="sustain-head"><div><h2>📊 Next-Hour Operating Plan</h2><p>The station prepares before vehicles arrive.</p></div><span id="nextHourRisk" class="badge">Normal</span></div>
+    <div class="si-plan-grid">
+      <div><span>Next hour</span><b id="nextHour">{{ data.next_hour.time if data.next_hour else '—' }}</b></div>
+      <div><span>Expected arrivals</span><b id="nextVehicles">{{ data.next_hour.vehicles if data.next_hour else 0 }} EVs</b></div>
+      <div><span>Expected charging demand</span><b id="nextLoad">{{ data.next_hour.load_kw if data.next_hour else 0 }} kW</b></div>
+      <div><span>Station capacity</span><b id="capacity">{{ data.grid_capacity_kw }} kW</b></div>
+    </div>
+  </div>
+
+  <div class="sustain-card si-wide si-explain">
+    <div class="sustain-head"><div><h2>🧠 How the prediction works</h2><p>Transparent by design — no black-box number is shown without context.</p></div></div>
+    <div class="si-model-flow">
+      <div><b>1</b><span>Historical arrivals</span><small>Hourly station demand profile</small></div>
+      <i>+</i>
+      <div><b>2</b><span>Time & day</span><small>Weekday/weekend demand factor</small></div>
+      <i>+</i>
+      <div><b>3</b><span>Live station state</span><small>Current occupancy & load</small></div>
+      <i>→</i>
+      <div class="active"><b>4</b><span>Arrival forecast</span><small>Expected EVs + kW demand</small></div>
+    </div>
+    <p class="muted si-note">The current MVP uses a transparent historical demand model. When a station operator connects a real arrival-history/telemetry API, the same prediction layer can consume those records directly.</p>
+  </div>
+</section>
+
+<script>
+const initialData = {{ data | tojson }};
+const svg = document.getElementById('forecastChart');
+const NS = 'http://www.w3.org/2000/svg';
+function el(name, attrs={}) { const e=document.createElementNS(NS,name); Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v)); return e; }
+function drawChart(rows, capacity) {
+  svg.innerHTML='';
+  const w=900,h=290,p={l:45,r:20,t:18,b:40};
+  const max=Math.max(capacity, ...rows.map(r=>r.load_kw), 10)*1.15;
+  const x=i=>p.l+i*((w-p.l-p.r)/Math.max(rows.length-1,1));
+  const y=v=>h-p.b-(v/max)*(h-p.t-p.b);
+  [0,0.25,0.5,0.75,1].forEach(t=>{
+    const yy=y(max*t); svg.appendChild(el('line',{x1:p.l,y1:yy,x2:w-p.r,y2:yy,stroke:'#e4ece9','stroke-width':1}));
+  });
+  const capY=y(capacity); svg.appendChild(el('line',{x1:p.l,y1:capY,x2:w-p.r,y2:capY,stroke:'#d05c5c','stroke-width':2,'stroke-dasharray':'7 6'}));
+  const capText=el('text',{x:w-p.r-3,y:capY-7,'text-anchor':'end',fill:'#b34c4c','font-size':11,'font-weight':700}); capText.textContent=`Grid limit ${capacity} kW`; svg.appendChild(capText);
+  const points=rows.map((r,i)=>`${x(i)},${y(r.load_kw)}`).join(' ');
+  svg.appendChild(el('polyline',{points,fill:'none',stroke:'#168a67','stroke-width':4,'stroke-linecap':'round','stroke-linejoin':'round'}));
+  rows.forEach((r,i)=>{
+    const cx=x(i),cy=y(r.load_kw); const danger=r.load_kw>capacity;
+    svg.appendChild(el('circle',{cx,cy,r:danger?7:5,fill:danger?'#c94f4f':'#168a67',stroke:'#fff','stroke-width':2}));
+    if(i%2===0 || i===rows.length-1){ const t=el('text',{x:cx,y:h-14,'text-anchor':'middle',fill:'#6c7a77','font-size':10}); t.textContent=r.time; svg.appendChild(t); }
+    if(i===rows.length-1){ const t=el('text',{x:cx-5,y:cy-12,'text-anchor':'end',fill:danger?'#b34c4c':'#176e52','font-size':11,'font-weight':800}); t.textContent=`${r.vehicles} EVs`; svg.appendChild(t); }
+  });
+}
+function riskStyle(risk){
+  const b=document.getElementById('riskBadge'); const n=document.getElementById('nextHourRisk');
+  const label=risk==='high'?'OVERLOAD RISK':risk==='watch'?'WATCH':'NORMAL'; b.textContent=label; n.textContent=label;
+}
+function render(data){
+  if(!data.live) return;
+  const live=data.live, peak=data.peak, next=data.next_hour;
+  document.getElementById('stationName').textContent=live.station.title;
+  document.getElementById('stationAddress').textContent=live.station.address;
+  document.getElementById('updatedAt').textContent=live.timestamp;
+  document.getElementById('vehiclesNow').textContent=live.vehicles_charging;
+  document.getElementById('chargersFree').textContent=`${live.available_chargers}/${live.total_chargers}`;
+  document.getElementById('currentLoad').textContent=`${live.current_load_kw} kW`;
+  document.getElementById('solarNow').textContent=`${live.solar_kw} kW`;
+  document.getElementById('sourceBadge').textContent=`● ${live.source_live?'LIVE PROVIDER DATA':'LIVE DEMO / MODELLED TELEMETRY'}`;
+  if(peak){
+    document.getElementById('peakVehicles').textContent=peak.vehicles;
+    document.getElementById('peakTime').textContent=peak.time;
+    document.getElementById('peakLoad').textContent=`${peak.load_kw} kW`;
+    const risk=peak.load_kw>data.grid_capacity_kw?'high':peak.load_kw>data.grid_capacity_kw*.8?'watch':'normal';
+    riskStyle(risk);
+    document.getElementById('riskMessage').textContent = risk==='high'
+      ? `⚠️ ${peak.load_kw} kW is above the ${data.grid_capacity_kw} kW station limit. VoltGrid should shift flexible sessions before ${peak.time}.`
+      : risk==='watch'
+      ? `🟠 Demand is approaching the ${data.grid_capacity_kw} kW limit. VoltGrid recommends reserving capacity early.`
+      : `🟢 Forecast demand remains within the ${data.grid_capacity_kw} kW station limit.`;
+    document.getElementById('recommendationTitle').textContent = risk==='high' ? 'Pre-optimize before the peak' : 'Keep capacity ready';
+    document.getElementById('recommendationText').textContent = risk==='high'
+      ? `Forecast: ${peak.vehicles} EVs around ${peak.time}. Shift flexible charging into lower-demand hours and preserve capacity for deadline-critical vehicles.`
+      : `The forecast is currently within the station limit. Keep monitoring and re-optimize automatically if demand or solar conditions change.`;
+  }
+  if(next){
+    document.getElementById('nextHour').textContent=next.time;
+    document.getElementById('nextVehicles').textContent=`${next.vehicles} EVs`;
+    document.getElementById('nextLoad').textContent=`${next.load_kw} kW`;
+    const r=next.load_kw>data.grid_capacity_kw?'high':next.load_kw>data.grid_capacity_kw*.8?'watch':'normal';
+    document.getElementById('nextHourRisk').textContent=r==='high'?'OVERLOAD RISK':r==='watch'?'WATCH':'NORMAL';
+  }
+  drawChart(data.forecast,data.grid_capacity_kw);
+  if(data.database){
+    document.getElementById('snapshotCount').textContent=data.database.snapshots;
+    document.getElementById('eventCount').textContent=data.database.arrival_events;
+    document.getElementById('dataSource').textContent=data.database.mode;
+    document.getElementById('confidence').textContent=`${data.confidence}%`;
+    document.getElementById('dbMode').textContent=data.database.snapshots>0?'RECORDING':'WAITING';
+  }
+}
+render(initialData);
+async function refresh(){
+  try { const r=await fetch('/api/station/prediction',{cache:'no-store'}); if(r.ok) render(await r.json()); }
+  catch(e){ document.getElementById('sourceBadge').textContent='● CONNECTION RETRY'; }
+}
+setInterval(refresh,30000);
+</script>
+{% endblock %}

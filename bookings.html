@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}Bookings · VoltGrid{% endblock %}{% block content %}
+<div class="page-head"><div><p class="eyebrow">MY CHARGING</p><h1>Bookings</h1><p>Your upcoming and previous charging reservations.</p></div><a class="btn primary" href="/stations">Find station</a></div>
+<div class="table-wrap"><table><tr><th>Station</th><th>Vehicle</th><th>SOC</th><th>Energy</th><th>Cost</th><th>Status</th></tr>{% for b in bookings %}<tr><td><b>{{ b.station_name }}</b><small>{{ b.start_time }}</small></td><td>{{ b.model or 'Vehicle' }}</td><td>{{ b.current_soc }}% → {{ b.target_soc }}%</td><td>{{ '%.1f'|format(b.energy_kwh) }} kWh</td><td>₹{{ '%.0f'|format(b.estimated_cost) }}</td><td><span class="pill">{{ b.status }}</span></td></tr>{% else %}<tr><td colspan="6" class="empty">No bookings yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

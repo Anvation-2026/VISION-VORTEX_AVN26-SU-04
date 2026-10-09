@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}VoltGrid{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="/dashboard"><span>⚡</span> VOLTGRID</a>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/stations">Stations</a>
+    <a href="/station-intelligence">🔮 Station AI</a>
+    <a href="/optimizer">Smart Charge</a>
+    <a href="/sustainability">🌱 Sustainability</a>
+    <a href="/bookings">Bookings</a>
+    <a href="/history">History</a>
+    <a href="/profile">Profile</a>
+  </nav>
+  <div class="user-menu"><span>{{ user.name }}</span><a class="logout" href="/logout">Logout</a></div>
+</header>
+<main class="page">{% block content %}{% endblock %}</main>
+<footer>VoltGrid · EV charging intelligence · Live station data + optimization</footer>
+</body>
+</html>

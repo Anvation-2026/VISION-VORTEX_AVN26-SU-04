@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Dashboard · VoltGrid{% endblock %}{% block content %}
+<div class="page-head"><div><p class="eyebrow">EV DRIVER</p><h1>Good to see you, {{ user.name.split(' ')[0] }}.</h1><p>Everything you need for your next charge.</p></div><a class="btn primary" href="/optimizer">⚡ Plan a charge</a></div>
+<div class="cards">
+<div class="stat"><span>Nearby stations</span><b>{{ stations|length }}</b><small>{% if live %}Live data source{% else %}Demo fallback{% endif %}</small></div>
+<div class="stat"><span>Your vehicles</span><b>{{ vehicles|length }}</b><small><a href="/profile">Manage vehicles</a></small></div>
+<div class="stat"><span>Active bookings</span><b>{{ bookings|length }}</b><small><a href="/bookings">View bookings</a></small></div>
+</div>
+<section class="section sustainability-preview"><div class="section-title"><div><h2>🌱 Station Sustainability</h2><p>See the environmental impact of your charging network.</p></div><a href="/sustainability">Open Sustainability Center →</a></div><div class="sustain-mini"><div><span>Eco Score</span><b>87/100</b></div><div><span>Clean energy</span><b>482 kWh</b></div><div><span>CO₂ avoided</span><b>18.6 kg</b></div><div><span>Peak reduction</span><b>22.6%</b></div></div></section>
+<section class="section"><div class="section-title"><div><h2>Recommended nearby</h2><p>Station availability is refreshed from the data source.</p></div><a href="/stations">View all →</a></div>
+<div class="station-grid">{% for s in stations %}<a class="station-card" href="/station/{{ s.id }}"><div class="station-top"><span class="status">{{ s.status }}</span><span>⚡ {{ s.power_kw }} kW</span></div><h3>{{ s.title }}</h3><p>{{ s.address }}</p><div class="station-bottom"><b>{{ s.connector }}</b><span>{% if s.price %}₹{{ s.price }}/kWh{% else %}Price unavailable{% endif %}</span></div></a>{% endfor %}</div></section>
+<section class="section"><div class="section-title"><div><h2>Recent bookings</h2></div><a href="/bookings">All bookings →</a></div>
+<div class="table-wrap"><table><tr><th>Station</th><th>Vehicle</th><th>Energy</th><th>Cost</th><th>Status</th></tr>{% for b in bookings %}<tr><td>{{ b.station_name }}</td><td>{{ b.vehicle_id }}</td><td>{{ '%.1f'|format(b.energy_kwh) }} kWh</td><td>₹{{ '%.0f'|format(b.estimated_cost) }}</td><td><span class="pill">{{ b.status }}</span></td></tr>{% else %}<tr><td colspan="5" class="empty">No bookings yet. Plan your first charge.</td></tr>{% endfor %}</table></div></section>
+{% endblock %}
